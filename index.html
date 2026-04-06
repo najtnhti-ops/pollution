@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exposé - Pollution</title>
+<style>
+/* ===== GLOBAL ===== */
+body{
+  margin:0;
+  font-family:'Segoe UI',Arial,sans-serif;
+  color:#f5f5f5;
+  background:#121212;
+  overflow-x:hidden;
+  transition:all 0.4s;
+}
+body.light-mode{ background:#f5f5f5; color:#111827; }
+
+/* ===== PAGES ===== */
+.page{
+  display:none;
+  min-height:100vh;
+  position:relative;
+  transition:all 0.4s;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+.active{ display:block; }
+
+.content{
+  position:relative;
+  z-index:2;
+  padding:60px 20px;
+  text-align:center;
+  max-width:1000px;
+  margin:auto;
+}
+
+/* ===== TITRES ===== */
+h1{
+  font-size:3.5rem;
+  margin-bottom:30px;
+  letter-spacing:1.5px;
+  background:linear-gradient(90deg, #00b894, #0984e3, #fdcb6e);
+  -webkit-background-clip:text;
+  color:transparent;
+  text-shadow:0 2px 10px rgba(0,0,0,0.8);
+  animation:shine 5s linear infinite;
+}
+h2{ font-size:2rem; color:#00b894; text-shadow:0 2px 8px rgba(0,0,0,0.6); margin-bottom:18px;}
+h3{ font-size:1.4rem; color:#fdcb6e; text-shadow:0 1px 5px rgba(0,0,0,0.5); margin-bottom:10px;}
+body.light-mode h1,h2,h3{ color:#111827; text-shadow:none; }
+
+/* ===== MEMBERS ===== */
+.members{
+  margin:20px auto;
+  max-width:400px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+.member{
+  background:rgba(0,0,0,0.6);
+  padding:16px 20px;
+  border-radius:18px;
+  font-weight:bold;
+  backdrop-filter:blur(6px);
+  transition:all 0.4s;
+  box-shadow:0 6px 15px rgba(0,184,148,0.5);
+}
+.member:hover{
+  background:rgba(0,0,0,0.8);
+  transform:scale(1.07);
+  box-shadow:0 0 25px #00b894,0 0 35px #0984e3;
+}
+body.light-mode .member{
+  background:rgba(230,230,230,0.7);
+  color:#111827;
+}
+
+/* ===== BUTTONS ===== */
+button{
+  padding:16px 32px;
+  margin:10px;
+  font-size:16px;
+  border:none;
+  border-radius:30px;
+  background:#1e272e;
+  color:#00b894;
+  cursor:pointer;
+  font-weight:700;
+  transition:all 0.3s;
+  box-shadow:0 5px 20px rgba(0,184,148,0.5);
+  position:relative;
+  overflow:hidden;
+}
+button span{ position:relative; z-index:2; }
+button::before{
+  content:"";
+  position:absolute;
+  top:0; left:-100%;
+  width:100%; height:100%;
+  background:linear-gradient(120deg,#00b894,#0984e3,#fdcb6e);
+  transition:all 0.5s;
+  z-index:0;
+  opacity:0.85;
+}
+button:hover::before{ left:0; }
+button:hover{ transform:scale(1.08); color:#fff; }
+button.back{ background:#fdcb6e; color:#111827; box-shadow:0 5px 25px rgba(253,203,110,0.6);}
+button.back:hover{ background:#f1c40f; box-shadow:0 0 25px #fdcb6e,0 0 35px #0984e3; }
+
+/* ===== START BUTTON ===== */
+button.start-center{
+  margin-top:30px;
+  font-size:18px;
+  background:linear-gradient(90deg,#00b894,#0984e3,#fdcb6e);
+  color:#fff;
+  font-weight:800;
+  padding:16px 36px;
+  border-radius:35px;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,184,148,0.6);
+  transition: all 0.4s ease-in-out;
+  position:relative;
+  overflow:hidden;
+}
+button.start-center:hover{
+  transform:scale(1.12);
+  box-shadow:0 0 25px #00b894, 0 0 35px #0984e3, 0 0 45px #fdcb6e;
+  color:#fff;
+}
+button.start-center::before{
+  content:"";
+  position:absolute;
+  top:0; left:-100%;
+  width:100%; height:100%;
+  background:linear-gradient(120deg,#00b894,#0984e3,#fdcb6e);
+  opacity:0.8;
+  z-index:0;
+  transition:all 0.5s;
+}
+button.start-center:hover::before{ left:0; }
+button.start-center span{ position:relative; z-index:2; }
+
+/* ===== FIXED TOP BUTTONS ===== */
+#darkModeBtn,#photosBtn,#videosBtn{
+  position:fixed; top:15px;
+  padding:12px 20px;
+  font-size:14px;
+  border-radius:28px;
+  box-shadow:0 6px 20px rgba(0,184,148,0.7);
+  cursor:pointer;
+  z-index:999;
+  transition:all 0.3s;
+  background:#1e272e;
+  color:#00b894;
+}
+#photosBtn{left:140px; display:none;}
+#videosBtn{left:260px; display:none;}
+#darkModeBtn:hover,#photosBtn:hover,#videosBtn:hover{
+  background:#0d1b2a;
+  box-shadow:0 0 18px #00b894,0 0 28px #0984e3,0 0 38px #fdcb6e;
+  transform:scale(1.1);
+}
+
+/* ===== SECTION BOX ===== */
+.section-box{
+  background:rgba(0,0,0,0.65);
+  padding:25px 28px;
+  margin:20px auto;
+  max-width:850px;
+  border-radius:22px;
+  text-align:left;
+  backdrop-filter:blur(10px);
+  box-shadow:0 6px 30px rgba(0,184,148,0.4);
+  transition:all 0.4s;
+}
+body.light-mode .section-box{
+  background:rgba(245,245,245,0.8);
+  color:#111827;
+  backdrop-filter:none;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* ===== VIDEO BACKGROUND ===== */
+#home video#bgVideo{
+  position:absolute; top:0; left:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  z-index:0;
+  filter:brightness(0.7);
+  transition:all 0.3s;
+}
+
+/* ===== PAGES IMAGE BACKGROUND ===== */
+.page-bg{ background-image:url('backround.png'); background-size:cover; background-position:center; background-repeat:no-repeat; }
+body.light-mode .page-bg{ background-image:none; background-color:#f5f5f5; }
+
+/* ===== GALLERY ===== */
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  justify-items:center;
+  margin-top:25px;
+}
+.card{
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,184,148,0.6);
+  transition:all 0.3s;
+  width:100%;
+  max-width:260px;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.card img,.card video{
+  width:100%;
+  height:auto;
+  display:block;
+  object-fit:cover;
+  border-radius:12px;
+}
+.card h3{
+  margin:10px 0;
+  color:#fff;
+  font-weight:600;
+  text-shadow:0 2px 8px rgba(0,0,0,0.7);
+}
+.card:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 25px rgba(255,255,255,0.5), 0 0 35px rgba(0,0,0,0.3);
+}
+body.light-mode .card{
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+body.light-mode .card h3{ color:#111827; text-shadow:none; }
+
+/* ===== ANIMATION TITRE ===== */
+@keyframes shine{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:600px){
+  h1{font-size:2.4rem;} h2{font-size:1.6rem;} h3{font-size:1.2rem;} 
+  button{font-size:14px;padding:12px 22px;} 
+  .gallery{grid-template-columns:1fr;}
+  .card{max-width:100%;}
+}
+/* ===============================
+   ULTRA PRO GLOBAL UPGRADE
+================================= */
+
+/* ===== BIG MAIN TITLE (H1) ===== */
+h1{
+  background-size:300% 300%;
+  animation:shine 6s ease infinite, glowTitle 3s ease-in-out infinite alternate;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+/* Extra Glow Animation */
+@keyframes glowTitle{
+  from{
+    text-shadow:0 0 10px #00b894,
+                0 0 20px #0984e3,
+                0 0 30px #fdcb6e;
+  }
+  to{
+    text-shadow:0 0 25px #00b894,
+                0 0 40px #0984e3,
+                0 0 60px #fdcb6e;
+  }
+}
+
+/* ===== H2 Upgrade ===== */
+h2{
+  font-weight:800;
+  letter-spacing:1px;
+  background:linear-gradient(90deg,#00b894,#0984e3);
+  -webkit-background-clip:text;
+  color:transparent;
+  border-left:5px solid #00b894;
+  padding-left:15px;
+  transition:0.3s;
+}
+
+h2:hover{
+  transform:translateX(6px);
+}
+
+/* ===== H3 Upgrade ===== */
+h3{
+  background:linear-gradient(90deg,rgba(253,203,110,0.2),rgba(255,105,180,0.2));
+  padding:6px 14px;
+  border-radius:12px;
+  font-weight:700;
+  transition:0.3s;
+}
+
+h3:hover{
+  box-shadow:0 0 15px #fdcb6e,0 0 25px #0984e3;
+  transform:scale(1.07);
+}
+
+/* ===============================
+   BUTTON SUPER DESIGN
+================================= */
+
+button{
+  position:relative;
+  overflow:hidden;
+  border:none;
+  border-radius:35px;
+  font-weight:800;
+  letter-spacing:1px;
+  transition:all 0.3s ease;
+  background:linear-gradient(135deg,#00b894,#0984e3);
+  color:#fff;
+  box-shadow:0 8px 25px rgba(0,184,148,0.6);
+}
+
+/* Animated shine effect */
+button::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.5),transparent);
+  transition:0.6s;
+}
+
+button:hover::after{
+  left:100%;
+}
+
+button:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 25px #00b894,
+             0 0 35px #0984e3,
+             0 0 45px #fdcb6e;
+}
+
+/* Back button special */
+button.back{
+  background:linear-gradient(135deg,#fdcb6e,#f39c12);
+  color:#111;
+}
+
+button.back:hover{
+  box-shadow:0 0 25px #fdcb6e,0 0 40px #f39c12;
+}
+
+/* ===============================
+   SECTION BOX UPGRADE
+================================= */
+
+.section-box{
+  transition:all 0.4s ease;
+}
+
+.section-box:hover{
+  transform:translateY(-8px);
+  box-shadow:0 20px 45px rgba(0,184,148,0.6);
+}
+
+/* ===============================
+   CARD UPGRADE
+================================= */
+
+.card{
+  transition:all 0.4s ease;
+}
+
+.card:hover{
+  transform:scale(1.08) rotate(1deg);
+  box-shadow:0 0 30px rgba(255,255,255,0.5),
+             0 0 50px rgba(0,184,148,0.6);
+}
+/* ===========================
+   FULLSCREEN IMAGE VIEWER
+=========================== */
+
+img{
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+img:hover{
+  transform:scale(1.05);
+  filter:brightness(1.1);
+}
+
+/* Overlay */
+.image-viewer{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.95);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  opacity:0;
+  visibility:hidden;
+  transition:0.4s ease;
+}
+
+/* Active state */
+.image-viewer.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* Full image */
+.image-viewer img{
+  max-width:90%;
+  max-height:90%;
+  border-radius:15px;
+  box-shadow:0 0 40px rgba(0,184,148,0.8);
+  animation:zoomIn 0.4s ease;
+}
+
+/* Close button */
+.image-viewer span{
+  position:absolute;
+  top:25px;
+  right:40px;
+  font-size:40px;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+.image-viewer span:hover{
+  color:#00b894;
+  transform:scale(1.2);
+}
+
+@keyframes zoomIn{
+  from{transform:scale(0.7); opacity:0;}
+  to{transform:scale(1); opacity:1;}
+}
+/* ===== FIX TOP BUTTONS MOBILE ===== */
+@media (max-width:768px){
+
+  #darkModeBtn,
+  #photosBtn,
+  #videosBtn{
+    position:fixed;
+    top:auto;
+    bottom:15px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:10px;
+  }
+
+  #photosBtn{ bottom:65px; }
+  #videosBtn{ bottom:115px; }
+
+}
+@media (max-width:768px){
+
+  .content{
+    padding:40px 15px;
+  }
+
+  p{
+    font-size:14px;
+    line-height:1.6;
+  }
+
+  ul{
+    padding-left:18px;
+  }
+
+}
+@media (max-width:768px){
+  #home video#bgVideo{
+    height:100vh;
+    object-fit:cover;
+  }
+}
+@media (max-width:768px){
+
+  button{
+    width:100%;
+    max-width:320px;
+  }
+
+}
+</style>
+</head>
+<body>
+
+<!-- FIXED BUTTONS -->
+<button id="darkModeBtn">🌙 Dark Mode</button>
+<button id="photosBtn">📸 Photos</button>
+<button id="videosBtn">🎬 Vidéos</button>
+
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+  <video autoplay muted playsinline id="bgVideo"><source src="video.mp4" type="video/mp4"></video>
+  <div class="content">
+    <h2>🌍 LA Pollution liée à la consommation des matiéres énergétiques et à ľutilisation des matières organiques et inorganiques dans les industries chimiques alimentaires et minérales</h2>
+    <button id="introBtn">📖 Introduction</button>
+    <button id="membersBtn">conclusion</button>
+    <div id="membersList" style="display:none;" class="members">
+       <h2>
+        La pollution touche l’air, l’eau et le sol. Elle est causée par les gaz des usines et des voitures, les déchets industriels et les produits chimiques. Ces polluants provoquent des maladies, détruisent la nature et causent des pertes économiques.
+Pour réduire la pollution, il faut utiliser les énergies renouvelables, recycler les déchets, traiter les eaux usées et sensibiliser les citoyens à protéger l’environnement.
+       </h2>
+    </div>
+    <button id="goalsBtn">📚 Objectifs d’Apprentissage</button>
+    <div id="goalsList" style="display:none;">
+      <div class="section-box">
+        <h2>Objectifs d’Apprentissage</h2>
+        <ul>
+          <li>Comprendre les différents types de pollution : air, eau, sol.</li>
+          <li>Identifier les sources principales de pollution.</li>
+          <li>Connaître les impacts sur la santé humaine et l’environnement.</li>
+          <li>Analyser les effets économiques liés à la pollution.</li>
+          <li>Proposer des mesures pour réduire et prévenir la pollution.</li>
+        </ul>
+      </div>
+    </div>
+    <button class="start-center" onclick="startExposé()"><span>▶ START</span></button>
+
+    <!-- INTRO -->
+    <div id="introductionSection" class="section-box" style="display:none;margin-top:15px;">
+      <h2>Introduction</h2>
+      <h3>Bienvenue à l'exposé</h3>
+      <p>L’accroissement des activités industrielles et agricoles humaines a 
+engendré une pollution étendue à tous les milieux environnementaux.  
+La pollution désigne la contamination d’un milieu environnemental par un agent 
+chimique, physique ou biologique, ce qui modifie les caractéristiques naturelles 
+de ce milieu, altérant de manière plus ou moins importante le fonctionnement de 
+son écosystème.</p>
+      <div class="card" style="background:rgba(0,184,148,0.6)"><img src="introduction.jpeg" alt="la terre est triste"><h3>𝙇𝙖 𝙩𝙚𝙧𝙧𝙚 𝙚𝙨𝙩 𝙩𝙧𝙞𝙨𝙩𝙚</h3></div>
+      <button id="questionBtn">❓ Question</button>
+    </div>
+    <div id="questionModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:9999;justify-content:center;align-items:center;">
+      <div style="background:rgba(0,0,0,0.9);padding:25px;border-radius:20px;max-width:600px;width:90%;text-align:left;box-shadow:0 5px 25px rgba(0,184,148,0.4);position:relative;">
+        <h2>Questions sur l'Introduction</h2>
+        <ul style="color:#f3f4f6;font-size:1rem;line-height:1.6;">
+          <li> Quelles sont les sources de la pollution industrielle ?</li>
+          <li> Et quels impacts ont les polluants sur les milieux naturels ?  </li>
+        </ul>
+        <button id="closeModalBtn" style="margin-top:15px;background:#fdcb6e;color:#111827;padding:10px 20px;border-radius:25px;cursor:pointer;font-weight:700;">Fermer</button>
+      </div>
+    </div>
+    <div id="videoEndText" style="display:none;">2BAC SPC 1</div>
+  </div>
+</div>
+
+<!-- MENU PAGE -->
+<div id="menu" class="page">
+  <div class="content">
+    <h1>Choisissez une Partie</h1>
+    <button onclick="showPage('polluants')">I. Les polluants et les milieux pollués</button>
+    <button onclick="showPage('impact')">II. Impact des polluants</button>
+    <br><button class="back" onclick="showPage('home')">⬅ Retour</button>
+  </div>
+</div>
+
+<!-- POLLUANTS PAGE -->
+<div id="polluants" class="page">
+  <div class="content">
+    <button onclick="toggleSections()" style="font-size:24px;background:#00b894;color:#111827;padding:10px 20px;">I- Les polluants et les milieux pollués</button>
+    <div style="margin-top:20px;">
+      <button onclick="showSection('air')">1. La pollution de l’air</button>
+      <button onclick="showSection('eau')">2. La pollution de l’eau</button>
+      <button onclick="showSection('sol')">3. La pollution du sol</button>
+    </div>
+
+    <!-- AIR SECTION -->
+    <div id="air" class="section-box" style="display:none;">
+      <h2>La pollution de l’air</h2>
+      <p>Smog, particules fines et ozone...</p>
+      <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
+        <button onclick="showAirSub('def')">1. Définition</button>
+        <button onclick="showAirSub('sources')">2. Les principales sources des polluants</button>
+        <button onclick="showAirSub('effet')">3. L’effet de serre</button>
+        <button onclick="showAirSub('pluies')">4. Les pluies acides</button>
+        <button onclick="showAirSub('smog')">5. Le smog</button>
+        <button onclick="showAirSub('ozone')">6. Le trou d’ozone</button>
+      </div>
+      <div id="def" class="air-sub" style="display:none; margin-top:15px; padding:10px; background:rgba(0,184,148,0.4); border-radius:12px;">
+        <h3>Définition</h3>
+        <p>1.Définition:
+La pollution de l’air est la présence de substances nocives (gaz ou particules) dans l’atmosphère, qui représentent un danger pour la santé humaine et l’environnement.</p>
+      </div>
+      <div id="sources" class="air-sub" style="display:none; margin-top:15px; padding:10px; background:rgba(9,132,227,0.4); border-radius:12px;">
+        <h3>Les principales sources des polluants</h3>
+        <p> Les principales sources des polluants: <br>
+-Les polluants atmosphériques se classent en deux grandes familles : </p> <br> <p>
+a.les polluants primaires.</p> <br> <p>
+b.les polluants secondaires. </p> <br>
+<p>
+Les polluants primaires (NOx, SOx, CO, COV, etc.) sont directement issus des sources de pollution, soit par les activités anthropiques soit par des sources naturelles comme l'érosion ou le volcanisme.
+Les polluants secondaires (particules secondaires, O3, NOz, etc.) ne sont pas directement rejetés dans l'atmosphère mais proviennent de réactions chimiques de gaz entre eux.</p>
+ <div class="card" style="background:rgba(0,184,148,0.6)"><img src="wijdan 1.jpeg" alt="la terre est triste"></div>
+      </div>
+      <div id="effet" class="air-sub" style="display:none; margin-top:15px; padding:10px; background:rgba(253,203,110,0.4); border-radius:12px;">
+        <h3>L’effet de serre</h3>
+        <p>-L’effet de serre est un phénomène naturel qui permet à la Terre de garder la chaleur du soleil. Sans lui, la planète serait très froide et la vie serait difficile.
+Mais aujourd’hui, à cause de la pollution, cet effet devient trop fort.</p>
+<div class="card" style="background:rgba(0,184,148,0.6)"><img src="wijdan 2.jpeg" alt="la terre est triste"></div>
+      </div>
+      <div id="pluies" class="air-sub" style="display:none; margin-top:15px; padding:10px; background:rgba(255,0,150,0.4); border-radius:12px;">
+        <h3>Les pluies acides</h3>
+        <p>Les pluies acides sont un type de pollution de l’air. Elles se produisent lorsque des gaz polluants, comme le dioxyde de soufre (SO₂) et les oxydes d’azote (NOₓ), sont rejetés dans l’atmosphère par les usines, les voitures ou les centrales électriques.
+Ces gaz se mélangent avec l’eau dans les nuages et forment des acides. Ensuite, ils tombent sur la Terre sous forme de pluie, de neige ou de brouillard : c’est ce qu’on appelle les pluies acides.</p>
+<div class="card" style="background:rgba(0,184,148,0.6)"><img src="wijdan 3.jpeg" alt="la terre est triste"></div>
+      </div>
+      <div id="smog" class="air-sub" style="display:none; margin-top:15px; padding:10px; background:rgba(0,0,0,0.4); border-radius:12px;">
+        <h3>Le smog</h3>
+        <p>En anglais smoke, fumée et fog, brouillard,
+C’est un nuage de pollution atmosphérique constitué de particules issues de la
+combustion (centrale au charbon, gaz d’échappement) et de particules fines
+d’ozone. <br>
+Le smog se forme au dessus des villes où l’activité automobile ou industrielle est
+importante, plus particulièrement par temps ensoleillé.
+Le smog limite la visibilité dans l’atmosphère</p>
+<div class="card" style="background:rgba(0,184,148,0.6)"><img src="wijdan 4.jpeg" alt="la terre est triste"></div>
+      </div>
+      <div id="ozone" class="air-sub" style="display:none; margin-top:15px; padding:10px; background:rgba(0,255,255,0.4); border-radius:12px;">
+        <h3>Destruction de la couche d’ozone :</h3>
+        <p>La couche d’ozone, située dans la stratosphère entre 20 et 50 km, est composée de molécules d’ozone. Elle joue un rôle essentiel en absorbant la majorité des rayons ultraviolets (UV) nocifs, protégeant ainsi la vie sur Terre.
+Les observations par satellites révèlent que son épaisseur a diminué au cours des 40 dernières années, et qu’un trou est apparu au-dessus de l’Antarctique.<br>
+Cette dégradation est principalement causée par les polluants chlorés, notamment les CFC présents dans les aérosols et les réfrigérateurs, qui libèrent du chlore détruisant l’ozone.
+La diminution de la couche d’ozone entraîne une augmentation des rayons UV atteignant la Terre, ce qui représente un danger pour la santé et l’environnement.</p>
+        <h3>Les conséquences de la destruction de la couche d’ozone :</h3>
+        <p>Réchauffement climatique :
+L’appauvrissement de la couche d’ozone provoque une diminution de l’ozone dans la stratosphère et une augmentation de l’ozone troposphérique, qui est un polluant et un gaz à effet de serre, contribuant ainsi au réchauffement climatique.</p> <br>
+         <h2>ATTENTION :</h2>
+      <p>
+        L’ozone troposphérique ne provient pas de la dégradation de l’ozone stratosphérique. En réalité, l’ozone troposphérique est principalement produit au niveau du sol par une réaction complexe entre le rayonnement solaire, les composés organiques volatils et les oxydes d’azote (NOx), dont certains sont générés par les activités humaines.
+La dégradation de la couche d’ozone entraîne une augmentation des rayons ultraviolets (UV) atteignant la Terre, nocifs pour les êtres vivants car ils peuvent endommager l’ADN.
+L’exposition prolongée aux UV provoque le vieillissement prématuré de la peau et des cancers cutanés (mélanome), surtout chez les peaux claires.
+Problèmes oculaires : inflammation de la cornée, cataracte, cécité et cancers des yeux.
+Affaiblissement du système immunitaire.
+Disparition de certaines espèces animales.
+      </p>
+      <div class="card" style="background:rgba(0,184,148,0.6)"><img src="wijdan 5.jpeg" alt="la terre est triste"></div>
+        
+      </div>
+    </div>
+    <!-- EAU SECTION -->
+    <div id="eau" class="section-box" style="display:none;"><h2>Définition</h2><p>Pollution de l 'eau
+La pollution de l’eau correspond aux changements de ses caractéristiques physiques, chimiques ou biologiques. Elle se manifeste aussi par les déversements de substances solides, liquides ou gazeuses, susceptibles de nuire à la qualité de l’eau et à la santé. Les eaux de surface reçoivent les eaux usées ménagères, industrielles et agricoles. Les polluants des eaux usées sont très diversifiés et véhiculent des substances organiques et inorganiques, qui vont modifier les propriétés physiques et chimiques des milieux aquatiques ainsi que leur richesse spécifique.</p>
+<h2>Pollution des eaux douces</h2> <p>Malgré la rareté des eaux douces, les rivières, les lacs et les eaux souterraines reçoivent des eaux usées domestiques, industrielles et agricoles.
+</p> <br> <h3>
+   ☆Les principales sources de pollution sont:
+</h3>
+<p>
+  Pollution des eaux douces:
+Malgré la rareté des eaux douces, les rivières, les lacs et les eaux souterraines reçoivent des eaux usées domestiques, industrielles et agricoles.
+
+Les principales sources de pollution sont:
+ les pluies acides, les déchets liquides, les engrais chimiques, les pesticides et les déchets industriels comme les métaux lourds.
+
+Cette pollution entraîne la dégradation de la qualité de l’eau, la contamination des nappes phréatiques et des risques pour la santé humaine et le milieu aquatique.
+</p>
+<div class="card" style="background:rgba(0,184,148,0.6)"><img src="toura.png" alt="la terre est triste"></div>
+<h3>Pollution des mers et des océans:
+</h3>
+<p>La mer possède une grande capacité d’autoépuration, mais l’évacuation incontrôlée des eaux usées urbaines et industrielles transforme les eaux côtières en un milieu fortement pollué.
+Les hydrocarbures font partie des polluants les plus dangereux pour les eaux marines. Ils provoquent des marées noires qui réduisent l’oxygénation de l’eau, diminuent l’activité biologique et empêchent la photosynthèse du phytoplancton.
+Cette pollution entraîne la mort et l’intoxication de nombreux organismes marins et provoque un déséquilibre des écosystèmes marins.</p>
+</div>
+    <!-- SOL SECTION -->
+    <div id="sol" class="section-box" style="display:none;">
+      <h2>La pollution du sol</h2>
+      <p>Le sol est le support de toutes les activités humaines...</p>
+
+      <!-- Sous-boutons Sol -->
+      <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
+        <button onclick="showSolSub('facteurs')">A. Les facteurs de pollution du sol</button>
+        <button onclick="showSolSub('role')">B. Rôle du sol comme interface intermédiaire</button>
+      </div>
+
+      <!-- Contenus cachés pour Sol -->
+      <div id="facteurs" style="display:none; margin-top:15px; padding:10px; background:rgba(255,0,0,0.3); border-radius:12px;">
+        <h3>Les facteurs de pollution du sol</h3>
+        <button onclick="showFacteurSub('a')">A.Les activités agricoles :</button>
+        <button onclick="showFacteurSub('b')">B.Les activités industrielles : </button>
+        <button onclick="showFacteurSub('c')">C.Les rejets sauvages :</button>
+
+        <div id="a" style="display:none; margin-top:10px; padding:10px; background:rgba(255,165,0,0.3); border-radius:8px;">
+          <div class="card" style="background:rgba(0,184,148,0.6)"><img src="a hiba.png" alt="la terre est triste"></div>
+      <p>Le sol est le support de toutes les activités de l’homme et aussi le support de nombreux écosystème. 
+Cependant il subit les effets des différents aspects de pollution liés aux activées de l’homme, comme 
+l’activité agricole. <br>
+L’utilisation intensive et excessive des engrais et des pesticides, engendre des quantités excédentaires, 
+non assimilées par les plantes, et qui s’accumulent et deviennent une source de pollution. Elles 
+contaminent le sol, les eaux de surface et les eaux souterraines.</p>
+        </div>
+        <div id="b" style="display:none; margin-top:10px; padding:10px; background:rgba(0,255,0,0.3); border-radius:8px;">
+           <div class="card" style="background:rgba(0,184,148,0.6)"><img src="b hiba.png" alt="la terre est triste"></div>
+           <p>La libération des gaz polluants, oxydes d’azote ( NO2 ) et de soufre ( SO2) , engendre des pluies acides 
+qui polluent le sol, en ramenant des millions de tonnes d’azote et de soufre, ce qui augmente son acidité et 
+conduit à la disparition des microorganismes et de la microflore.</p>
+        </div>
+        <div id="c" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,255,0.3); border-radius:8px;">
+          <p>Par le rejet sauvage, des déchets solides, et le déversement incontrôlé des eaux usées, le sol reçoit des 
+quantités importantes de polluants et de germes pathogènes. Ces polluants, en s’infiltrant dans le sol, vont augmenter les risques de contamination qui pourraient engendrer de graves problèmes écologiques et de 
+santé publique.</p>
+        </div>
+      </div>
+
+      <div id="role" style="display:none; margin-top:15px; padding:10px; background:rgba(0,255,255,0.3); border-radius:12px;">
+        <h3>Rôle du sol comme interface</h3>
+         <div class="card" style="background:rgba(0,184,148,0.6)"><img src="c hiba.png" alt="la terre est triste"></div>
+         <p>Les sols représentent la couche supérieur de la croute terrestre, ils constituent le support naturel de 
+plusieurs écosystèmes et le support de toutes les activités de l’homme ; agricoles ; industrielles et 
+ménagères. En s’intercalant entre l’atmosphère et les eaux souterraines, les sols jouent des rôles très 
+importants, assurant l’équilibre des cycles de l’eau et des matières ainsi que l’équilibre des écosystèmes. </p>
+      </div>
+
+    </div>
+
+    <button class="back" onclick="showPage('menu')">⬅ Retour</button>
+  </div>
+</div>
+
+<!-- IMPACT PAGE -->
+<div id="impact" class="page">
+  <div class="content">
+    <h1>II. Impact des polluants</h1>
+    <div class="section-box"><h3>1. Impact sur La Sonte </h3> <p>
+      La pollution, qu'elle soit de l'air, de l'eau ou du sol, génère des impacts dévastateurs tant sur la santé humaine que sur l'équilibre des écosystèmes.</p> <br> <p>
+☆L'impact de la pollution sur la santé :
+Au niveau de la santé, l'inhalation de polluants atmosphériques comme les particules fines, le dioxyde de soufre
+ et les oxydes d'azote 
+provoque de graves maladies respiratoires telles que l'asthme et les bronchites chroniques, mais aussi des pathologies cardio-vasculaires et des cancers. De même, la consommation d'eau contaminée par des germes pathogènes ou des métaux lourds entraîne des maladies hydriques comme la gastro-entérite et des troubles neurologiques chroniques.  </p> <br>
+☆L'impact de la pollution sur L'environnement :
+Sur le plan environnemental, les conséquences sont globales et alarmantes. L'accumulation des gaz à effet de serre, tels que le 
+ et le 
+, intensifie le réchauffement climatique, tandis que les rejets de CFC détruisent la couche d'ozone, nous exposant aux rayons UV nocifs. On observe également le phénomène des pluies acides qui dégradent les forêts et acidifient les milieux aquatiques. Dans ces milieux, l'excès de nitrates et de phosphates provoque l'eutrophisation, une prolifération d'algues qui consomme l'oxygène dissous et asphyxie la biodiversité. Enfin, la bioaccumulation des pesticides et métaux lourds le long des chaînes alimentaires finit par menacer l'ensemble des êtres vivants, y compris l'Homme, en bout de chaîne.
+    </p>
+    <div class="card" style="background:rgba(0,184,148,0.6)"><img src="hidaya 1.png" alt="la sante"></div>
+  </div>
+    <div class="section-box"><h3>2. Impact sur l’environnement</h3><p> ☆L'impact de la pollution sur L'environnement :
+Sur le plan environnemental, les conséquences sont globales et alarmantes. L'accumulation des gaz à effet de serre, tels que le 
+ et le 
+, intensifie le réchauffement climatique, tandis que les rejets de CFC détruisent la couche d'ozone, nous exposant aux rayons UV nocifs. On observe également le phénomène des pluies acides qui dégradent les forêts et acidifient les milieux aquatiques. Dans ces milieux, l'excès de nitrates et de phosphates provoque l'eutrophisation, une prolifération d'algues qui consomme l'oxygène dissous et asphyxie la biodiversité. Enfin, la bioaccumulation des pesticides et métaux lourds le long des chaînes alimentaires finit par menacer l'ensemble des êtres vivants, y compris l'Homme, en bout de chaîne.
+</p> 
+<div class="card" style="background:rgba(0,184,148,0.6)"><img src=" achfouf1.png" alt="la terre est triste"></div>
+<div class="card" style="background:rgba(0,184,148,0.6)"><img src="hidaya 2.jpeg" alt="la terre est triste"></div>
+</div>
+    <div class="section-box"><h3>3. Impact sur l’économie</h3><p>La pollution dans tous ses aspects, atmosphérique, hydrique et édaphique (liée 
+au sol), est accompagnée d’impacts négatifs sur l’économie : </p> <br>
+
+<p> <br>
+ Perte des jours de travail, <br>
+ Cout des soins médicaux, <br>
+ Coût de traitement des déchets et des eaux usées, <br>
+ Diminution de la productivité agricole… <br>
+</p><br>
+<p>
+Les pertes engendrées par la pollution s’élève à plusieurs milliards de dollars par 
+an. Une bonne partie de ce budget est alloué à la réparation des impacts de la 
+pollution sur l’environnement. </p>
+<div class="card" style="background:rgba(0,184,148,0.6)"><img src=" achfouf.png" alt="la terre est triste"></div>
+</div>
+    <button class="back" onclick="showPage('menu')">⬅ Retour</button>
+  </div>
+</div>
+
+<!-- PHOTOS PAGE -->
+<div id="photos" class="page">
+  <div class="content">
+    <h1>Galerie Photos</h1>
+    <div class="gallery">
+      <div class="card" style="background:rgba(0,184,148,0.6)"><img src="pol 1.jpeg" alt="Photo 1"></div>
+      <div class="card" style="background:rgba(9,132,227,0.6)"><img src="pol 2.jpeg" alt="Photo 2"></div>
+      <div class="card" style="background:rgba(253,203,110,0.6)"><img src="pol 3.jpeg" alt="Photo 3"></div>
+      <div class="card" style="background:rgba(255,105,180,0.6)"><img src="rachid 1.jpeg" alt="Photo 4"></div>
+      <div class="card" style="background:rgba(0,255,255,0.6)"><img src="rachid 2.jpeg" alt="Photo 5"></div>
+      <div class="card" style="background:rgba(255,140,0,0.6)"><img src="rachid 3.jpeg" alt="Photo 6"></div>
+      <div class="card" style="background:rgba(138,43,226,0.6)"><img src="sol 1.jpeg" alt="Photo 7"></div>
+      <div class="card" style="background:rgba(0,128,128,0.6)"><img src="sol 2.jpeg" alt="Photo 8"></div>
+      <div class="card" style="background:rgba(255,69,0,0.6)"><img src="sol 3.jpeg" alt="Photo 9"></div>
+    </div>
+    <button class="back" onclick="showPage('menu')">⬅ Retour</button>
+  </div>
+</div>
+
+<!-- VIDEOS PAGE -->
+<div id="videos" class="page">
+  <div class="content">
+    <h1>Galerie Vidéos</h1>
+    <div class="gallery">
+      <div class="card" style="background:rgba(0,184,148,0.6)">
+        <video controls><source src="intro.mp4" type="video/mp4"></video>
+        <h3>introduction</h3>
+      </div>
+      <div class="card" style="background:rgba(9,132,227,0.6)">
+        <video controls><source src="wijdan.mp4"video/mp4"></video>
+        <h3>La pollution de l’air</h3>
+      </div>
+      <div class="card" style="background:rgba(253,203,110,0.6)">
+        <video controls><source src="rachid.mp4"video/mp4"></video>
+        <h3>La pollution de l’eau</h3>
+      </div>
+      <div class="card" style="background:rgba(255,105,180,0.6)">
+        <video controls><source src="hiba.mp4"video/mp4"></video>
+        <h3>La pollution du sol</h3>
+      </div>
+      <div class="card" style="background:rgba(0,255,255,0.6)">
+        <video controls><source src="hidaya.mp4" type="video/mp4"></video>
+        <h3> Impact des polluants</h3>
+        <div class="card" style="background:rgba(114, 250, 2, 0.6)">
+        <video controls><source src="achfouf.mp4" type="video/mp4"></video>
+      </div>
+      </div>
+    </div>
+    <button class="back" onclick="showPage('menu')">⬅ Retour</button>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+
+  // Show page
+  window.showPage=(id)=>{
+    document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.classList.remove('page-bg');});
+    const page=document.getElementById(id);
+    page.classList.add('active');
+    if(id!=='home') page.classList.add('page-bg');
+    window.scrollTo(0,0);
+  }
+
+  // Dark mode
+  document.getElementById('darkModeBtn').addEventListener('click',()=>{ document.body.classList.toggle('light-mode'); });
+
+  // Members toggle
+  document.getElementById('membersBtn').addEventListener('click',()=>{ const list=document.getElementById('membersList'); list.style.display=(list.style.display==='none')?'grid':'none'; });
+
+  // Goals toggle
+  document.getElementById('goalsBtn').addEventListener('click',()=>{ const list=document.getElementById('goalsList'); list.style.display=(list.style.display==='none')?'block':'none'; });
+
+  // Intro toggle
+  document.getElementById('introBtn').addEventListener('click',()=>{ const intro=document.getElementById('introductionSection'); intro.style.display=(intro.style.display==='none')?'block':'none'; window.scrollTo({ top: intro.offsetTop-30, behavior:'smooth' }); });
+
+  // Question modal
+  document.getElementById('questionBtn').addEventListener('click',()=>{ document.getElementById('questionModal').style.display='flex'; });
+  document.getElementById('closeModalBtn').addEventListener('click',()=>{ document.getElementById('questionModal').style.display='none'; });
+
+  // Polluants sections
+  window.showSection=(id)=>{ document.querySelectorAll('#polluants .section-box').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block'; }
+  window.toggleSections=()=>{ document.querySelectorAll('#polluants .section-box').forEach(s=>s.style.display=(s.style.display==='none')?'block':'none'); }
+
+  // Start Exposé
+  window.startExposé=()=>{ showPage('menu'); document.getElementById('photosBtn').style.display='block'; document.getElementById('videosBtn').style.display='block'; }
+
+  // Background video end
+  const video=document.getElementById('bgVideo'); const endText=document.getElementById('videoEndText');
+  video.addEventListener('ended',()=>{ endText.style.display='block'; setTimeout(()=>{ endText.style.display='none'; video.currentTime=0; video.play(); },3000); });
+
+  // Photos & Videos buttons
+  document.getElementById('photosBtn').addEventListener('click',()=>showPage('photos'));
+  document.getElementById('videosBtn').addEventListener('click',()=>showPage('videos'));
+
+});
+
+// Air sections
+function showAirSub(id){
+  document.querySelectorAll('#air .air-sub').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+  document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// Sol sections
+function showSolSub(id){
+  document.getElementById('facteurs').style.display=(id==='facteurs')?'block':'none';
+  document.getElementById('role').style.display=(id==='role')?'block':'none';
+  window.scrollTo({top:document.getElementById(id).offsetTop-30, behavior:'smooth'});
+}
+
+// Facteurs A/B/C
+function showFacteurSub(id){
+  document.querySelectorAll('#facteurs > div[id]').forEach(d=>d.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+</script>
+<!-- Image Fullscreen Viewer -->
+<div class="image-viewer" id="viewer">
+  <span onclick="closeViewer()">×</span>
+  <img id="viewer-img">
+</div>
+<script>
+const images = document.querySelectorAll("img");
+const viewer = document.getElementById("viewer");
+const viewerImg = document.getElementById("viewer-img");
+
+images.forEach(img=>{
+  img.addEventListener("click", ()=>{
+    viewer.classList.add("active");
+    viewerImg.src = img.src;
+  });
+});
+
+function closeViewer(){
+  viewer.classList.remove("active");
+}
+
+/* Close when clicking outside image */
+viewer.addEventListener("click", (e)=>{
+  if(e.target !== viewerImg){
+    closeViewer();
+  }
+});
+</script>
+<!-- Fullscreen Image Viewer -->
+<div class="image-viewer" id="viewer">
+  <span class="close" onclick="closeViewer()">×</span>
+  <img id="viewer-img">
+  <div class="conclusion-box" id="viewer-conclusion">
+    <h2>العلوم</h2>
+    <p>La pollution touche l’air, l’eau et le sol. Elle est causée par les gaz des usines et des voitures, les déchets industriels et les produits chimiques. Pour réduire la pollution, il faut utiliser les énergies renouvelables, recycler les déchets, traiter les eaux usées et sensibiliser les citoyens.</p>
+  </div>
+</div>
+</html>
